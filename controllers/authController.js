@@ -2,7 +2,6 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-
 // ======================
 // REGISTER
 // ======================
@@ -68,10 +67,11 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    // ✅ PRODUCTION COOKIE SETTINGS (IMPORTANT)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // keep false in development
-      sameSite: "lax",
+      secure: true,        // required for HTTPS (Render uses HTTPS)
+      sameSite: "none",    // required for cross-domain
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -91,6 +91,8 @@ exports.loginUser = async (req, res) => {
 exports.logoutUser = (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
+    secure: true,
+    sameSite: "none",
     expires: new Date(0),
   });
 
